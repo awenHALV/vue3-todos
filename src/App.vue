@@ -1,27 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  vue3.0-typescript
+  <TodoInput />
+  <TodoList :todos="todos" />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
-
+import { computed, defineComponent, onMounted } from "vue"
+import TodoList from "./components/todo-list.vue"
+import TodoInput from "./components/todo-input.vue"
+import { IUseTodo, useTodo } from "./hooks"
+import { Store, useStore } from "vuex"
 export default defineComponent({
   name: "App",
   components: {
-    HelloWorld,
+    TodoList,
+    TodoInput,
   },
-});
+  setup() {
+    const { setTodos }: IUseTodo = useTodo()
+    const store: Store<any> = useStore()
+    onMounted(() => {
+      setTodos()
+    })
+
+    return {
+      todos: computed(() => store.getters.todos),
+    }
+  },
+})
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
