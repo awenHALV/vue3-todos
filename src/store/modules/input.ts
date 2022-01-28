@@ -27,8 +27,17 @@ const mutations = {
     state.todos.splice(index, 1)
   },
   [SET_DOING](state: IState, id: number): void {
-    const filterTodo: ITodo[] = state.todos.filter(item => item.id === id) || {}
-    filterTodo[0].status = TODO_STATUS.DOING
+    console.log(id)
+    // const filterTodo: ITodo[] = state.todos.filter(item => item.id === id) || {}
+    // filterTodo[0].status = TODO_STATUS.DOING
+    state.todos = state.todos.map((item: ITodo) => {
+      if (item.id === id) {
+        item.status = TODO_STATUS.DOING
+      } else {
+        item.status = TODO_STATUS.WILLDO
+      }
+      return item
+    })
   },
   [SET_STATUS](state: IState, id: number): void {
     const filterTodo: ITodo[] = state.todos.filter(item => item.id === id) || {}

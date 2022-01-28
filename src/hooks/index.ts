@@ -1,3 +1,4 @@
+import store from '@/store'
 import {
   ADD_TODO,
   REMOVE_TODO,
@@ -7,6 +8,7 @@ import {
   SET_STATUS
 } from '@/store/actionTypes'
 import { TODO_STATUS, ITodo, IState } from '@/types'
+import { watch } from 'vue'
 import { Store, useStore } from 'vuex'
 
 /**
@@ -20,19 +22,32 @@ interface IUseTodo {
   setTodos: () => void
   setStatus: (id: number) => void
 }
+
 function useTodo(): IUseTodo {
   const store: Store<any> = useStore()
 
   const { getLocalList, setLocalList }: IUseLocalStorage = useLocalStorage()
   const todos = getLocalList()
+
+  watch(
+    // 第一个参数为监听的对象
+    () => store.getters.todos,
+    // 监听的最新值
+    todos => {
+      setLocalList(todos)
+    }
+  )
   function addTodo(value: string): void {
+    if (store.getters.todos.map((item: ITodo) => item.title).includes(value)) {
+      alert('该Todo项已存在，请重新输入')
+      return
+    }
     const todo: ITodo = {
       id: new Date().getTime(),
       title: value,
       status: TODO_STATUS.WILLDO
     }
     store.dispatch(ADD_TODO, todo)
-    setLocalList(store.getters.todos)
   }
 
   function getTodos(): ITodo[] {
@@ -49,7 +64,6 @@ function useTodo(): IUseTodo {
 
   function removeTodo(id: number): void {
     store.dispatch(REMOVE_TODO, id)
-    setLocalList(store.getters.todos)
   }
 
   function setDoing(id: number) {
